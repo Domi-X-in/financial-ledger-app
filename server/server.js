@@ -40,13 +40,15 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 
+// Don't serve frontend in Render (frontend is deployed separately on Vercel)
+
 // Serve static assets in production
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../client/build")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
-  });
-}
+//if (process.env.NODE_ENV === "production") {
+//  app.use(express.static(path.join(__dirname, "../client/build")));
+//  app.get("*", (req, res) => {
+//    res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
+//  });
+//}
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
