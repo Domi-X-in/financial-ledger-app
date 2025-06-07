@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "axios": "^0.26.1",
+    "react-router-dom": "^6.2.2",
+    "socket.io-client": "^4.4.1",
+    "styled-components": "^5.3.3"
+  }
+}
