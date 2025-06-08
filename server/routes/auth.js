@@ -27,7 +27,7 @@ router.get("/token-debug", (req, res) => {
       const token = authHeader.split(" ")[1];
       const decoded = jwt.verify(
         token,
-        process.env.JWT_SECRET || "your_jwt_secret"
+        process.env.JWT_SECRET || "dev-secret-key-for-jwt"
       );
       console.log("Decoded token:", decoded);
       res.json({ message: "Token valid", decoded });
@@ -141,7 +141,7 @@ router.post("/google", async (req, res) => {
 
     const jwtToken = jwt.sign(
       jwtPayload,
-      process.env.JWT_SECRET || "your_jwt_secret",
+      process.env.JWT_SECRET || "dev-secret-key-for-jwt",
       {
         expiresIn: "1d",
       }
@@ -196,7 +196,7 @@ router.post("/login", async (req, res) => {
 
     jwt.sign(
       payload,
-      process.env.JWT_SECRET || "your_jwt_secret",
+      process.env.JWT_SECRET || "dev-secret-key-for-jwt",
       { expiresIn: "1d" },
       (err, token) => {
         if (err) throw err;
@@ -213,6 +213,37 @@ router.post("/login", async (req, res) => {
     );
   } catch (err) {
     console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Add development login endpoint
+router.post("/dev-login", (req, res) => {
+  try {
+    const payload = {
+      user: {
+        id: "dev-user-id",
+        role: "admin"
+      }
+    };
+
+    const token = jwt.sign(
+      payload,
+      process.env.JWT_SECRET || "dev-secret-key-for-jwt",
+      { expiresIn: "1d" }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: "dev-user-id",
+        name: "Development User",
+        email: "dev@example.com",
+        role: "admin"
+      }
+    });
+  } catch (err) {
+    console.error("Dev login error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });

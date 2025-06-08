@@ -153,20 +153,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Development login function for testing without Google OAuth
-  const devLogin = () => {
-    // Create a fake user and token for development
-    const fakeToken = "dev-token-for-testing";
-    const fakeUser = {
-      _id: "dev-user-id",
-      name: "Development User",
-      email: "dev@example.com",
-      role: "admin", // Set to 'admin' to test admin features
-    };
-
-    localStorage.setItem("token", fakeToken);
-    localStorage.setItem("user", JSON.stringify(fakeUser));
-    setToken(fakeToken);
-    setUser(fakeUser);
+  const devLogin = async () => {
+    try {
+      const response = await axios.post("/api/auth/dev-login");
+      const { token, user } = response.data;
+      
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      setToken(token);
+      setUser(user);
+    } catch (err) {
+      console.error("Development login error:", err);
+      throw err;
+    }
   };
 
   // Add this to AuthProvider component after the existing devLogin function

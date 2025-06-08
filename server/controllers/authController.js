@@ -19,7 +19,7 @@ const generateToken = (user) => {
         role: user.role,
       },
     },
-    process.env.JWT_SECRET || "your_jwt_secret",
+    process.env.JWT_SECRET || "dev-secret-key-for-jwt",
     { expiresIn: "1d" }
   );
 };
@@ -196,7 +196,7 @@ exports.verifyToken = (req, res) => {
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || "your_jwt_secret"
+      process.env.JWT_SECRET || "dev-secret-key-for-jwt"
     );
     res.json({
       message: "Token is valid",
