@@ -1,5 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import config from "../config";
+
+// Create axios instance with base URL
+const api = axios.create({
+  baseURL: config.apiUrl
+});
 
 const AuthContext = createContext();
 
@@ -16,10 +22,10 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (token) {
       console.log("Setting axios default auth header with token");
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     } else {
       console.log("Removing axios default auth header");
-      delete axios.defaults.headers.common["Authorization"];
+      delete api.defaults.headers.common["Authorization"];
     }
   }, [token]);
 
@@ -33,7 +39,7 @@ export const AuthProvider = ({ children }) => {
           );
 
           // Set axios defaults for all requests
-          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+          api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
           // Check if we already have user data from login/googleLogin
           const storedUser = localStorage.getItem("user");
@@ -46,7 +52,7 @@ export const AuthProvider = ({ children }) => {
           }
 
           // Otherwise fetch from API
-          const res = await axios.get("/api/auth/current");
+          const res = await api.get("/api/auth/current");
           console.log("User data loaded:", res.data);
           setUser(res.data);
 
@@ -75,7 +81,7 @@ export const AuthProvider = ({ children }) => {
   // Regular login function
   const login = async (email, password) => {
     try {
-      const res = await axios.post("/api/auth/login", {
+      const res = await api.post("/api/auth/login", {
         email,
         password,
       });
@@ -98,7 +104,7 @@ export const AuthProvider = ({ children }) => {
   const googleLogin = async (googleToken) => {
     try {
       console.log("Sending Google token to backend...");
-      const res = await axios.post("/api/auth/google", { token: googleToken });
+      const res = await api.post("/api/auth/google", { token: googleToken });
       console.log("Response from backend:", res.data);
 
       if (!res.data.token) {
@@ -127,7 +133,7 @@ export const AuthProvider = ({ children }) => {
   // User registration
   const register = async (name, email, password) => {
     try {
-      const res = await axios.post("/api/auth/register", {
+      const res = await api.post("/api/auth/register", {
         name,
         email,
         password,
@@ -149,13 +155,13 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     // Clear axios auth header
-    delete axios.defaults.headers.common["Authorization"];
+    delete api.defaults.headers.common["Authorization"];
   };
 
   // Development login function for testing without Google OAuth
   const devLogin = async () => {
     try {
-      const response = await axios.post("/api/auth/dev-login");
+      const response = await api.post("/api/auth/dev-login");
       const { token, user } = response.data;
       
       localStorage.setItem("token", token);
