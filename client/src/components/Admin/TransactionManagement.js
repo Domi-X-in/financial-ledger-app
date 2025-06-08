@@ -22,7 +22,7 @@ const TransactionManagement = () => {
     description: "",
     amount: "",
   });
-  const [editTransactionId, setEditTransactionId] = useState(null);
+  const [selectedTransactions, setSelectedTransactions] = useState(new Set());
   const [editFormData, setEditFormData] = useState({
     date: "",
     description: "",
@@ -124,45 +124,50 @@ const TransactionManagement = () => {
     }
   };
 
-  const handleEditChange = (e) => {
-    const { name, value } = e.target;
-    setEditFormData({
-      ...editFormData,
-      [name]: value,
+  const handleSelectTransaction = (transactionId) => {
+    setSelectedTransactions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(transactionId)) {
+        newSet.delete(transactionId);
+      } else {
+        newSet.clear(); // Only allow one selection
+        newSet.add(transactionId);
+      }
+      return newSet;
     });
   };
 
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      // Format data for API
-      const transactionData = {
-        ...editFormData,
-        amount: parseFloat(editFormData.amount),
-      };
-
-      await updateTransaction(editTransactionId, transactionData);
-
-      // Update local state
-      fetchTransactionsForLedger(selectedLedgerId);
-
-      // Reset form
-      setEditTransactionId(null);
-      setSuccess("Transaction updated successfully!");
-
-      // Hide success message after 3 seconds
-      setTimeout(() => {
-        setSuccess("");
-      }, 3000);
-    } catch (err) {
-      console.error(`Error updating transaction ${editTransactionId}:`, err);
-      setError("Failed to update transaction. Please try again.");
+  const handleSelectAll = () => {
+    if (selectedTransactions.size === transactions.length) {
+      setSelectedTransactions(new Set());
+    } else {
+      setSelectedTransactions(new Set(transactions.map(t => t._id)));
     }
   };
 
-  const startEdit = (transaction) => {
-    setEditTransactionId(transaction._id);
+  const handleBulkDelete = async () => {
+    if (window.confirm(`Are you sure you want to delete ${selectedTransactions.size} transaction(s)?`)) {
+      try {
+        await Promise.all(
+          Array.from(selectedTransactions).map(id => deleteTransaction(id))
+        );
+        fetchTransactionsForLedger(selectedLedgerId);
+        setSelectedTransactions(new Set());
+        setSuccess(`${selectedTransactions.size} transaction(s) deleted successfully!`);
+        setTimeout(() => setSuccess(""), 3000);
+      } catch (err) {
+        console.error("Error deleting transactions:", err);
+        setError("Failed to delete transactions. Please try again.");
+      }
+    }
+  };
+
+  const handleBulkEdit = () => {
+    if (selectedTransactions.size !== 1) {
+      setError("Please select exactly one transaction to edit.");
+      return;
+    }
+    const transaction = transactions.find(t => t._id === Array.from(selectedTransactions)[0]);
     setEditFormData({
       date: new Date(transaction.date).toISOString().split("T")[0],
       description: transaction.description,
@@ -170,22 +175,30 @@ const TransactionManagement = () => {
     });
   };
 
-  const cancelEdit = () => {
-    setEditTransactionId(null);
+  const handleBulkEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await Promise.all(
+        Array.from(selectedTransactions).map(id =>
+          updateTransaction(id, {
+            ...editFormData,
+            amount: parseFloat(editFormData.amount),
+          })
+        )
+      );
+      fetchTransactionsForLedger(selectedLedgerId);
+      setSelectedTransactions(new Set());
+      setEditFormData({ date: "", description: "", amount: "" });
+      setSuccess("Transaction(s) updated successfully!");
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      console.error("Error updating transactions:", err);
+      setError("Failed to update transactions. Please try again.");
+    }
   };
 
-  const handleDeleteTransaction = async (transactionId) => {
-    if (window.confirm("Are you sure you want to delete this transaction?")) {
-      try {
-        await deleteTransaction(transactionId);
-
-        // Update local state
-        fetchTransactionsForLedger(selectedLedgerId);
-      } catch (err) {
-        console.error(`Error deleting transaction ${transactionId}:`, err);
-        setError("Failed to delete transaction. Please try again.");
-      }
-    }
+  const isCheckboxDisabled = (transactionId) => {
+    return selectedTransactions.size === 1 && !selectedTransactions.has(transactionId);
   };
 
   if (loading && ledgers.length === 0) {
@@ -209,14 +222,15 @@ const TransactionManagement = () => {
 
       <div className="card mb-3">
         <div className="form-group">
-          <label htmlFor="ledger-select" className="form-label">
+          <h3 className="edit-title" id="ledger-select-label">
             Select Ledger
-          </label>
+          </h3>
           <select
             id="ledger-select"
             className="form-input"
             value={selectedLedgerId}
             onChange={handleLedgerChange}
+            aria-labelledby="ledger-select-label"
           >
             <option value="">Select a Ledger</option>
             {ledgers.map((ledger) => (
@@ -237,11 +251,25 @@ const TransactionManagement = () => {
             >
               {showCreateForm ? "Cancel" : "Add Transaction"}
             </button>
+            <button
+              className="btn"
+              onClick={handleBulkEdit}
+              disabled={!selectedTransactions.size}
+            >
+              Edit
+            </button>
+            <button
+              className="btn"
+              onClick={handleBulkDelete}
+              disabled={!selectedTransactions.size}
+            >
+              Delete
+            </button>
           </div>
 
           {showCreateForm && (
             <div className="card mb-3">
-              <h3 className="mb-2">Add Transaction</h3>
+              <h3 className="edit-title mb-2">Add Transaction</h3>
               <form onSubmit={handleCreateSubmit}>
                 <div className="form-group">
                   <label htmlFor="date" className="form-label">
@@ -275,7 +303,7 @@ const TransactionManagement = () => {
 
                 <div className="form-group">
                   <label htmlFor="amount" className="form-label">
-                    Amount (positive for deposits, negative for expenses)
+                    Amount
                   </label>
                   <input
                     type="number"
@@ -289,9 +317,77 @@ const TransactionManagement = () => {
                   />
                 </div>
 
-                <button type="submit" className="btn">
+                <button type="submit" className="btn mb-3">
                   Add Transaction
                 </button>
+              </form>
+            </div>
+          )}
+
+          {editFormData.date && (
+            <div className="card mb-3">
+              <h3 className="edit-title mb-2">Edit Transaction</h3>
+              <form onSubmit={handleBulkEditSubmit}>
+                <div className="edit-row">
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label htmlFor="edit-date" className="edit-form-label">
+                      Date
+                    </label>
+                    <input
+                      type="date"
+                      id="edit-date"
+                      name="date"
+                      className="form-input"
+                      value={editFormData.date}
+                      onChange={(e) => setEditFormData({ ...editFormData, date: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label htmlFor="edit-amount" className="edit-form-label">
+                      Amount
+                    </label>
+                    <input
+                      type="number"
+                      id="edit-amount"
+                      name="amount"
+                      className="form-input"
+                      value={editFormData.amount}
+                      onChange={(e) => setEditFormData({ ...editFormData, amount: e.target.value })}
+                      step="0.01"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="edit-description" className="edit-form-label">
+                    Description
+                  </label>
+                  <input
+                    type="text"
+                    id="edit-description"
+                    name="description"
+                    className="form-input"
+                    value={editFormData.description}
+                    onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className={styles['edit-actions']}>
+                  <button type="submit" className="btn">
+                    Save Changes
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setEditFormData({ date: "", description: "", amount: "" });
+                      setSelectedTransactions(new Set());
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </form>
             </div>
           )}
@@ -303,11 +399,18 @@ const TransactionManagement = () => {
               <table className={`${styles['responsive-table']} table`}>
                 <thead>
                   <tr>
+                    <th>
+                      <input
+                        type="checkbox"
+                        checked={selectedTransactions.size === transactions.length}
+                        onChange={handleSelectAll}
+                        className={styles['select-checkbox']}
+                      />
+                    </th>
                     <th>Date</th>
                     <th>Description</th>
                     <th>Amount</th>
                     <th>Balance</th>
-                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -319,151 +422,53 @@ const TransactionManagement = () => {
                     </tr>
                   ) : (
                     transactions.map((transaction) => (
-                      <tr key={transaction._id}>
-                        {editTransactionId === transaction._id ? (
-                          // Edit form row
-                          <td colSpan="5">
-                            <form
-                              onSubmit={handleEditSubmit}
-                              className="flex-between"
-                            >
-                              <div
-                                className="form-group"
-                                style={{ marginBottom: 0, marginRight: "10px" }}
-                              >
-                                <input
-                                  type="date"
-                                  name="date"
-                                  className="form-input"
-                                  value={editFormData.date}
-                                  onChange={handleEditChange}
-                                  required
-                                />
-                              </div>
-
-                              <div
-                                className="form-group"
-                                style={{
-                                  marginBottom: 0,
-                                  marginRight: "10px",
-                                  flex: 1,
-                                }}
-                              >
-                                <input
-                                  type="text"
-                                  name="description"
-                                  className="form-input"
-                                  value={editFormData.description}
-                                  onChange={handleEditChange}
-                                  required
-                                />
-                              </div>
-
-                              <div
-                                className="form-group"
-                                style={{ marginBottom: 0, marginRight: "10px" }}
-                              >
-                                <input
-                                  type="number"
-                                  name="amount"
-                                  className="form-input"
-                                  value={editFormData.amount}
-                                  onChange={handleEditChange}
-                                  step="0.01"
-                                  required
-                                />
-                              </div>
-
-                              <div style={{ display: "flex", gap: "10px" }}>
-                                <button
-                                  type="submit"
-                                  className="btn"
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "14px",
-                                  }}
-                                >
-                                  Save
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={cancelEdit}
-                                  className="btn btn-secondary"
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "14px",
-                                  }}
-                                >
-                                  Cancel
-                                </button>
-                              </div>
-                            </form>
-                          </td>
-                        ) : (
-                          // Normal row
-                          <>
-                            <td>{formatDate(transaction.date)}</td>
-                            <td><span className={styles.ellipsis}>{transaction.description}</span></td>
-                            <td>
-                              <span
-                                className={
-                                  transaction.amount >= 0
-                                    ? "positive"
-                                    : "negative"
-                                }
-                              >
-                                {formatCurrency(
-                                  transaction.amount,
-                                  ledgers.find(
-                                    (l) => l._id === selectedLedgerId
-                                  )?.currency
-                                )}
-                              </span>
-                            </td>
-                            <td>
-                              <span
-                                className={
-                                  transaction.balance >= 0
-                                    ? "positive"
-                                    : "negative"
-                                }
-                              >
-                                {formatCurrency(
-                                  transaction.balance,
-                                  ledgers.find(
-                                    (l) => l._id === selectedLedgerId
-                                  )?.currency
-                                )}
-                              </span>
-                            </td>
-                            <td>
-                              <div style={{ display: "flex", gap: "10px" }}>
-                                <button
-                                  onClick={() => startEdit(transaction)}
-                                  className="btn"
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "14px",
-                                  }}
-                                >
-                                  Edit
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleDeleteTransaction(transaction._id)
-                                  }
-                                  className="btn btn-secondary"
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "14px",
-                                  }}
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                            </td>
-                          </>
-                        )}
+                      <tr 
+                        key={transaction._id}
+                        className={selectedTransactions.has(transaction._id) ? styles['selected-row'] : ''}
+                      >
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={selectedTransactions.has(transaction._id)}
+                            onChange={() => handleSelectTransaction(transaction._id)}
+                            className={styles['select-checkbox']}
+                            disabled={isCheckboxDisabled(transaction._id)}
+                          />
+                        </td>
+                        <td>{formatDate(transaction.date)}</td>
+                        <td><span className={styles.ellipsis}>{transaction.description}</span></td>
+                        <td>
+                          <span
+                            className={
+                              transaction.amount >= 0
+                                ? "positive"
+                                : "negative"
+                            }
+                          >
+                            {formatCurrency(
+                              transaction.amount,
+                              ledgers.find(
+                                (l) => l._id === selectedLedgerId
+                              )?.currency
+                            )}
+                          </span>
+                        </td>
+                        <td>
+                          <span
+                            className={
+                              transaction.balance >= 0
+                                ? "positive"
+                                : "negative"
+                            }
+                          >
+                            {formatCurrency(
+                              transaction.balance,
+                              ledgers.find(
+                                (l) => l._id === selectedLedgerId
+                              )?.currency
+                            )}
+                          </span>
+                        </td>
                       </tr>
                     ))
                   )}

@@ -94,10 +94,10 @@ body {
 
 .form-input {
   width: 100%;
-  padding: 12px 16px;
+  padding: 9.6px 12.8px; /* 20% less than 12px 16px */
   border: 1px solid var(--medium-gray);
   border-radius: var(--border-radius);
-  font-size: 16px;
+  font-size: 12.8px; /* 20% less than 16px */
   transition: var(--transition);
 }
 
@@ -263,6 +263,13 @@ body {
   .table th:first-child,
   .table td:first-child {
     min-width: 85px;
+  }
+}
+
+@media (max-width: 600px) {
+  .form-input {
+    font-size: 12px;
+    padding: 8px 10px;
   }
 }
 
@@ -602,4 +609,110 @@ body {
 .btn:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+/* Navbar user menu styles */
+.navbar-user-menu-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-user-btn {
+  background: none;
+  border: none;
+  padding: 0 8px;
+  cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+  height: 40px;
+}
+
+.navbar-user-btn:focus {
+  outline: 2px solid var(--secondary-color);
+}
+
+.navbar-user-dropdown {
+  position: absolute;
+  top: 44px;
+  right: 0;
+  background: white;
+  color: var(--text-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  min-width: 160px;
+  z-index: 100;
+  padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.navbar-user-welcome {
+  padding: 0.5rem 1rem 0.2rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.navbar-user-logout {
+  padding: 0.3rem 1rem 0.5rem 1rem;
+  color: var(--error-color);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .navbar-links {
+    gap: 12px;
+  }
+  .navbar-link {
+    display: none;
+  }
+  .navbar-link:first-child, /* Dashboard */
+  .navbar-link:nth-child(2) /* Admin */ {
+    display: inline-block;
+  }
+  .navbar-user-menu-wrapper {
+    margin-left: 8px;
+  }
+}
+
+/* Footer compact override */
+.footer {
+  padding: 0.5rem 0 !important;
+  font-size: 13px !important;
+  margin-top: 0.5rem !important;
+  background-color: var(--text-color);
+  color: white;
+  text-align: center;
+}
+
+/* Page and table titles for consistency */
+.page-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: #222;
+}
+.table-title, .responsive-table th, .form-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222;
+}
+
+@media (max-width: 600px) {
+  .footer {
+    font-size: 12px !important;
+    padding: 0.3rem 0 !important;
+    margin-top: 0.2rem !important;
+  }
+  .page-title {
+    font-size: 1.08rem;
+    margin-bottom: 0.7rem;
+  }
+  .form-label, .table-title, .responsive-table th {
+    font-size: 0.95rem;
+  }
 }

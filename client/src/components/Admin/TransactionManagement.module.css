@@ -1,43 +1,646 @@
+/* Base styles */
 .responsive-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 1rem;
+  margin-bottom: 1rem;
 }
 
 .responsive-table th,
 .responsive-table td {
-  padding: 8px 12px;
+  padding: 12px 16px;
   text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Tablet breakpoint */
+@media (max-width: 768px) {
+  .responsive-table {
+    font-size: 0.9rem;
+  }
+  
+  .responsive-table th,
+  .responsive-table td {
+    padding: 8px 12px;
+  }
+}
+
+/* Mobile breakpoint */
+@media (max-width: 480px) {
+  .transaction-management {
+    padding: 12px;
+  }
+
+  .responsive-table {
+    font-size: 0.85rem;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .responsive-table th,
+  .responsive-table td {
+    padding: 8px;
+    min-width: 100px; /* Minimum width for better readability */
+  }
+
+  .responsive-table th:first-child,
+  .responsive-table td:first-child {
+    position: sticky;
+    left: 0;
+    background: var(--bg-color);
+    z-index: 1;
+  }
+
+  .responsive-action-btn {
+    font-size: 0.85rem !important;
+    padding: 8px 12px !important;
+    min-height: 36px !important;
+    min-width: 36px !important;
+    border-radius: 6px !important;
+  }
+
+  .card {
+    padding: 16px !important;
+    border-radius: 12px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .form-group {
+    margin-bottom: 16px !important;
+  }
+
+  .form-input, 
+  select, 
+  input[type="text"], 
+  input[type="number"], 
+  input[type="date"] {
+    font-size: 1rem !important;
+    padding: 8px 12px !important;
+    height: 44px !important;
+    border-radius: 8px !important;
+  }
+
+  .btn {
+    font-size: 1rem !important;
+    padding: 10px 16px !important;
+    height: 44px !important;
+    border-radius: 8px !important;
+  }
+
+  h1 {
+    font-size: 1.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  h2, h3 {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  label, .form-label {
+    font-size: 0.9rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+}
+
+.ellipsis {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Improve table header visibility */
+.responsive-table th {
+  background-color: var(--bg-secondary);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Add hover effect for better row distinction */
+.responsive-table tbody tr:hover {
+  background-color: var(--bg-hover);
+}
+
+/* Additional styles for new component structure */
+.transaction-management {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.ledger-select-card {
+  margin-bottom: 24px;
+}
+
+.form-card {
+  margin-bottom: 24px;
+}
+
+.transaction-form {
+  display: grid;
+  gap: 16px;
+}
+
+.table-wrapper {
+  position: relative;
+  margin-top: 24px;
+}
+
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.edit-form {
+  padding: 16px;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.edit-form-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.edit-actions {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.positive {
+  color: var(--success-color);
+  font-weight: 500;
+}
+
+.negative {
+  color: var(--error-color);
+  font-weight: 500;
+}
+
+/* Alert styles */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.alert-error {
+  background-color: var(--error-bg);
+  color: var(--error-color);
+  border: 1px solid var(--error-border);
+}
+
+.alert-success {
+  background-color: var(--success-bg);
+  color: var(--success-color);
+  border: 1px solid var(--success-border);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .transaction-management {
+    padding: 16px;
+  }
+
+  .edit-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .edit-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .transaction-management {
+    padding: 12px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-buttons .btn {
+    width: 100%;
+  }
+}
+
+/* Table column width adjustments */
+.responsive-table th:first-child,
+.responsive-table td:first-child {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.responsive-table th:nth-child(2),
+.responsive-table td:nth-child(2) {
+  width: 100px;
+  min-width: 100px;
+  max-width: 100px;
   white-space: nowrap;
 }
 
+.responsive-table th:nth-child(3),
+.responsive-table td:nth-child(3) {
+  min-width: 200px;
+}
+
+.responsive-table th:nth-child(4),
+.responsive-table td:nth-child(4),
+.responsive-table th:nth-child(5),
+.responsive-table td:nth-child(5) {
+  width: 120px;
+  min-width: 120px;
+  text-align: right;
+}
+
+/* Checkbox styles */
+.select-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  margin: 0;
+}
+
+/* Selected row styles */
+.selected-row {
+  background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+/* Bulk actions styles */
+.bulk-actions {
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.bulk-actions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.bulk-actions-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bulk-edit-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.bulk-edit-actions {
+  display: flex;
+  gap: 0.5rem;
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+}
+
+/* Responsive styles for bulk actions */
+@media (max-width: 768px) {
+  .bulk-actions-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .bulk-actions-buttons {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .bulk-edit-form {
+    grid-template-columns: 1fr;
+  }
+
+  .bulk-edit-actions {
+    flex-direction: column;
+  }
+
+  .bulk-edit-actions button {
+    width: 100%;
+  }
+}
+
+/* Admin actions styles */
+.admin-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-actions .btn {
+  min-width: 100px;
+}
+
+/* Disabled button styles */
+.disabled-btn {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.disabled-btn:hover {
+  background-color: var(--border-color);
+  color: var(--text-color);
+}
+
+/* Edit actions styles */
+.edit-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Responsive styles for admin actions */
+@media (max-width: 768px) {
+  .admin-actions {
+    flex-direction: column;
+  }
+
+  .admin-actions .btn {
+    width: 100%;
+  }
+
+  .edit-actions {
+    flex-direction: column;
+  }
+
+  .edit-actions button {
+    width: 100%;
+  }
+}
+
+/* Extreme mobile compact table styles */
 @media (max-width: 600px) {
+  .responsive-table {
+    table-layout: fixed;
+    width: 100%;
+    font-size: 16px;
+  }
   .responsive-table th,
   .responsive-table td {
-    font-size: 0.9rem;
-    padding: 6px 4px;
-  }
-  .responsive-table th:nth-child(2),
-  .responsive-table td:nth-child(2) {
-    max-width: 90px;
+    padding: 0.5rem 0.3rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   .responsive-table th,
   .responsive-table td {
-    min-width: 80px;
+    width: auto;
+    min-width: 0;
+    max-width: none;
   }
-  .responsive-table {
+  .responsive-table th:nth-child(3),
+  .responsive-table td:nth-child(3) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .select-checkbox {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Card/stacked layout for ultra-small screens */
+@media (max-width: 430px) {
+  .responsive-table, .responsive-table thead, .responsive-table tbody, .responsive-table tr, .responsive-table th, .responsive-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .responsive-table thead {
+    display: none;
+  }
+  .responsive-table tr {
+    margin-bottom: 0.7rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 0.5rem 0.3rem;
+  }
+  .responsive-table td {
+    padding: 0.18rem 0.2rem;
+    border: none;
+    position: relative;
+    font-size: 12px;
+    text-align: left !important;
+  }
+  .responsive-table td:before {
+    content: attr(data-label);
+    font-weight: bold;
+    display: inline-block;
+    min-width: 70px;
+    margin-right: 0.5em;
+    color: #888;
+  }
+  .responsive-table td:first-child {
+    text-align: left;
+    padding-bottom: 0.1rem;
+  }
+}
+
+/* Footer compact styles */
+.footer {
+  padding: 0.5rem 0;
+  font-size: 13px;
+  margin-top: 0.5rem;
+}
+
+/* Table header style for reuse */
+.table-title, .responsive-table th {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222;
+}
+
+/* Select Ledger label to match table headers */
+.form-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222;
+}
+
+/* Transaction Management title just slightly bigger than table headers */
+.page-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: #222;
+}
+
+@media (max-width: 600px) {
+  .footer {
+    font-size: 12px;
+    padding: 0.3rem 0;
+    margin-top: 0.2rem;
+  }
+  .page-title {
+    font-size: 1.08rem;
+    margin-bottom: 0.7rem;
+  }
+  .form-label, .table-title, .responsive-table th {
     font-size: 0.95rem;
   }
 }
 
-.ellipsis {
-  display: inline-block;
-  max-width: 90px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: bottom;
+/* Edit Transaction title same as Select Ledger label */
+.edit-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0 0 1rem 0;
+  font-family: inherit;
+  line-height: 1.2;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  letter-spacing: normal;
+  text-transform: none;
+  display: block;
+}
+
+/* Smaller form labels inside edit form */
+.edit-form-label {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #444;
+}
+
+@media (max-width: 600px) {
+  .edit-title {
+    font-size: 0.95rem;
+    margin-bottom: 0.7rem;
+  }
+  .edit-form-label {
+    font-size: 0.88rem;
+  }
+}
+
+.edit-row {
+  display: flex !important;
+  gap: 1rem;
+  align-items: flex-end;
+}
+.edit-row > .form-group {
+  width: auto !important;
+  min-width: 0 !important;
+  flex-basis: 0 !important;
+  flex-grow: 1 !important;
+  flex-shrink: 1 !important;
+  display: flex !important;
+  flex-direction: column;
+}
+.edit-row > .form-group:first-child {
+  flex-grow: 3 !important;
+}
+.edit-row > .form-group:last-child {
+  flex-grow: 2 !important;
+}
+.edit-row .form-input {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.edit-form, form[onSubmit] {
+  display: block !important;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .edit-row {
+    flex-direction: column !important;
+    gap: 0.5rem;
+    align-items: stretch !important;
+  }
+  .edit-row > .form-group {
+    width: 100% !important;
+    flex-basis: auto !important;
+    flex-grow: 1 !important;
+  }
+}
+
+.btn,
+.btn:disabled,
+.btn-secondary,
+.btn-secondary:disabled,
+.disabled-btn {
+  box-sizing: border-box !important;
+  width: 180px !important;
+  padding: 12px 0 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  border-radius: var(--border-radius) !important;
+  border: 1px solid transparent !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  transition: var(--transition) !important;
+  display: inline-block !important;
+}
+
+.btn,
+.btn-secondary {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  cursor: pointer !important;
+}
+
+.btn:hover,
+.btn-secondary:hover {
+  background-color: var(--tertiary-color) !important;
+}
+
+.btn:disabled,
+.btn-secondary:disabled,
+.disabled-btn {
+  background-color: var(--border-color) !important;
+  color: var(--text-color) !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.btn:disabled:hover,
+.btn-secondary:disabled:hover,
+.disabled-btn:hover {
+  background-color: var(--border-color) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--border-color) !important;
 } 
