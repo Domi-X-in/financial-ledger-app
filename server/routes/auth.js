@@ -253,7 +253,7 @@ router.get(
   "/google-oauth",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
-router.get("/google/callback", authController.googleCallback);
+router.get("/api/auth/google/callback", authController.googleCallback);
 
 // Add route for checking current user
 router.get(
