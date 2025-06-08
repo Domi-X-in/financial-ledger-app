@@ -10,6 +10,7 @@ import {
   updateLedgerPermissions,
   getAllTransactions,
 } from "../../utils/api";
+import styles from './LedgerManagement.module.css';
 
 const LedgerManagement = () => {
   const [ledgers, setLedgers] = useState([]);
@@ -758,7 +759,7 @@ const LedgerManagement = () => {
               // First row has ledger name and currency with rowspan
               <>
                 <td rowSpan={rowCount} className="align-middle">
-                  {isEditingPermissions ? (
+                  <span className={styles.ellipsis}>{isEditingPermissions ? (
                     <input
                       type="text"
                       className="form-input"
@@ -768,7 +769,7 @@ const LedgerManagement = () => {
                     />
                   ) : (
                     ledger.name
-                  )}
+                  )}</span>
                 </td>
                 <td rowSpan={rowCount} className="align-middle">
                   {ledger.currency}
@@ -778,7 +779,7 @@ const LedgerManagement = () => {
 
             {/* Regular user name display with Remove button when editing permissions */}
             <td className="text-left">
-              {user.name}
+              <span className={styles.ellipsis}>{user.name}</span>
               {isEditingPermissions && user.userId && (
                 <button
                   onClick={() => handleRemoveUser(user.userId)}
@@ -794,7 +795,7 @@ const LedgerManagement = () => {
               )}
             </td>
 
-            <td className="text-left">{user.email}</td>
+            <td className="text-left"><span className={styles.ellipsis}>{user.email}</span></td>
 
             {isEditingPermissions && user.userId ? (
               // Role dropdown when editing permissions
@@ -955,7 +956,7 @@ const LedgerManagement = () => {
         </button>
       </div>
 
-      <div className="table-container">
+      <div className="table-container" style={{overflowX: 'auto'}}>
         <style>
           {`
           .align-middle {
@@ -995,7 +996,7 @@ const LedgerManagement = () => {
           }
           `}
         </style>
-        <table className="table">
+        <table className={`${styles['responsive-table']} table`}>
           <thead>
             <tr>
               <th style={{ width: "180px" }}>Ledger Name</th>

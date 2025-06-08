@@ -7,6 +7,7 @@ import {
   deleteTransaction,
 } from "../../utils/api";
 import { formatDate, formatCurrency } from "../../utils/helpers";
+import styles from './TransactionManagement.module.css';
 
 const TransactionManagement = () => {
   const [ledgers, setLedgers] = useState([]);
@@ -298,8 +299,8 @@ const TransactionManagement = () => {
           {loading ? (
             <div className="loading">Loading transactions...</div>
           ) : (
-            <div className="table-container">
-              <table className="table">
+            <div className="table-container" style={{overflowX: 'auto'}}>
+              <table className={`${styles['responsive-table']} table`}>
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -402,7 +403,7 @@ const TransactionManagement = () => {
                           // Normal row
                           <>
                             <td>{formatDate(transaction.date)}</td>
-                            <td>{transaction.description}</td>
+                            <td><span className={styles.ellipsis}>{transaction.description}</span></td>
                             <td>
                               <span
                                 className={

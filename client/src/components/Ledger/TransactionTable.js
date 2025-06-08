@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { formatDate, formatCurrency } from "../../utils/helpers";
 import TransactionCSVImport from "./TransactionCSVImport";
+import styles from './TransactionTable.module.css';
 
 const TransactionTable = ({
   transactions,
@@ -39,8 +40,8 @@ const TransactionTable = ({
         )}
       </div>
 
-      <div className="table-container">
-        <table className="table">
+      <div className="table-container" style={{overflowX: 'auto'}}>
+        <table className={`${styles['responsive-table']} table`}>
           <thead>
             <tr>
               <th>Date</th>
@@ -60,7 +61,7 @@ const TransactionTable = ({
               transactions.map((transaction) => (
                 <tr key={transaction._id}>
                   <td>{formatDate(transaction.date)}</td>
-                  <td>{transaction.description}</td>
+                  <td><span className={styles.ellipsis}>{transaction.description}</span></td>
                   <td>
                     <span
                       className={`transaction-amount ${

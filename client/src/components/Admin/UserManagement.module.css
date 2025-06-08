@@ -1,0 +1,36 @@
+.responsive-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+.responsive-table th,
+.responsive-table td {
+  padding: 8px 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .responsive-table th,
+  .responsive-table td {
+    font-size: 0.9rem;
+    padding: 6px 4px;
+  }
+  .responsive-table th,
+  .responsive-table td {
+    min-width: 80px;
+  }
+  .responsive-table {
+    font-size: 0.95rem;
+  }
+}
+
+.ellipsis {
+  display: inline-block;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+} 

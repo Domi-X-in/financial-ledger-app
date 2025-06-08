@@ -1,6 +1,7 @@
 // client/src/components/Admin/UserManagement.js
 import React, { useState, useEffect } from "react";
 import { getUsers, inviteUser, updateUser, deleteUser } from "../../utils/api";
+import styles from './UserManagement.module.css';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -158,8 +159,8 @@ const UserManagement = () => {
         </div>
       )}
 
-      <div className="table-container">
-        <table className="table">
+      <div className="table-container" style={{overflowX: 'auto'}}>
+        <table className={`${styles['responsive-table']} table`}>
           <thead>
             <tr>
               <th>Name</th>
@@ -179,8 +180,8 @@ const UserManagement = () => {
             ) : (
               users.map((user) => (
                 <tr key={user._id}>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
+                  <td><span className={styles.ellipsis}>{user.name}</span></td>
+                  <td><span className={styles.ellipsis}>{user.email}</span></td>
                   <td>
                     <select
                       value={user.role}

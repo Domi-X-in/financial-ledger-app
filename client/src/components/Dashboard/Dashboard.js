@@ -5,6 +5,7 @@ import { getLedgers, getLedgerById } from "../../utils/api";
 import { formatCurrency } from "../../utils/helpers";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
+import styles from './Dashboard.module.css';
 
 const Dashboard = () => {
   const [ledgers, setLedgers] = useState([]);
@@ -136,8 +137,8 @@ const Dashboard = () => {
       <div className="card mt-3">
         <h2 className="mb-3">Ledger Accounts Summary</h2>
 
-        <div className="table-container">
-          <table className="table">
+        <div className="table-container" style={{overflowX: 'auto'}}>
+          <table className={`${styles['responsive-table']} table`}>
             <thead>
               <tr>
                 <th>Your Access</th>
@@ -226,7 +227,7 @@ const Dashboard = () => {
                           {/* Always show Viewer instead of No Access */}
                         </span>
                       </td>
-                      <td>{ledger.name}</td>
+                      <td><span className={styles.ellipsis}>{ledger.name}</span></td>
                       <td
                         className={
                           (ledgerBalances[ledger._id] || 0) >= 0
