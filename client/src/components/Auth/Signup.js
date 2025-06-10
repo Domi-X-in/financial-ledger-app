@@ -175,21 +175,23 @@ const Signup = () => {
           </button>
         </div>
 
-        <div className="text-center mb-3">
-          <p className="mb-2">Development Options:</p>
-          <button
-            onClick={() => devUserLogin()}
-            className="btn"
-            style={{
-              backgroundColor: "#6c757d",
-              color: "white",
-              width: "100%",
-            }}
-            disabled={isLoading}
-          >
-            Sign in as User (Dev)
-          </button>
-        </div>
+        {process.env.NODE_ENV !== "production" && (
+          <div className="text-center mb-3">
+            <p className="mb-2">Development Options:</p>
+            <button
+              onClick={() => devUserLogin()}
+              className="btn"
+              style={{
+                backgroundColor: "#6c757d",
+                color: "white",
+                width: "100%",
+              }}
+              disabled={isLoading}
+            >
+              Sign in as User (Dev)
+            </button>
+          </div>
+        )}
 
         <p className="auth-message">
           Already have an account?{" "}

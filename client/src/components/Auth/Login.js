@@ -98,7 +98,7 @@ const Login = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -108,9 +108,20 @@ const Login = () => {
       return;
     }
 
-    console.log("Form submit - using dev login");
-    devLogin();
-    navigate("/dashboard");
+    try {
+      if (process.env.NODE_ENV !== "production") {
+        console.log("Form submit - using dev login");
+        await devLogin();
+      } else {
+        console.log("Form submit - using real login");
+        await login(email, password);
+      }
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -184,48 +195,50 @@ const Login = () => {
           </button>
         </div>
 
-        <div className="text-center mb-3">
-          <p className="mb-2">Development Options:</p>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "10px",
-              marginBottom: "10px",
-            }}
-          >
+        {process.env.NODE_ENV !== "production" && (
+          <div className="text-center mb-3">
+            <p className="mb-2">Development Options:</p>
             <div
-              style={{ display: "flex", gap: "10px", justifyContent: "center" }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+                marginBottom: "10px",
+              }}
             >
-              <button
-                onClick={() => devLogin()}
-                className="btn"
-                style={{ backgroundColor: "#6c757d", color: "white" }}
-                disabled={isLoading}
+              <div
+                style={{ display: "flex", gap: "10px", justifyContent: "center" }}
               >
-                Sign in as Admin (Dev)
-              </button>
+                <button
+                  onClick={() => devLogin()}
+                  className="btn"
+                  style={{ backgroundColor: "#6c757d", color: "white" }}
+                  disabled={isLoading}
+                >
+                  Sign in as Admin (Dev)
+                </button>
+
+                <button
+                  onClick={() => devUserLogin()}
+                  className="btn"
+                  style={{ backgroundColor: "#6c757d", color: "white" }}
+                  disabled={isLoading}
+                >
+                  Sign in as User (Dev)
+                </button>
+              </div>
 
               <button
-                onClick={() => devUserLogin()}
+                onClick={testBackendConnection}
                 className="btn"
-                style={{ backgroundColor: "#6c757d", color: "white" }}
+                style={{ backgroundColor: "#28a745", color: "white" }}
                 disabled={isLoading}
               >
-                Sign in as User (Dev)
+                Test Backend Connection
               </button>
             </div>
-
-            <button
-              onClick={testBackendConnection}
-              className="btn"
-              style={{ backgroundColor: "#28a745", color: "white" }}
-              disabled={isLoading}
-            >
-              Test Backend Connection
-            </button>
           </div>
-        </div>
+        )}
 
         <p className="auth-message">
           Don't have an account?{" "}

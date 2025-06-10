@@ -217,36 +217,94 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Add development login endpoint
-router.post("/dev-login", (req, res) => {
-  try {
-    const payload = {
-      user: {
-        id: "dev-user-id",
-        role: "admin"
-      }
-    };
+// Add development login endpoints (disabled in production)
+if (process.env.NODE_ENV !== "production") {
+  // Admin dev login
+  router.post("/dev-login", async (req, res) => {
+    try {
+      const email = "dev@example.com";
+      let user = await User.findOne({ email });
 
-    const token = jwt.sign(
-      payload,
-      process.env.JWT_SECRET || "dev-secret-key-for-jwt",
-      { expiresIn: "1d" }
-    );
-
-    res.json({
-      token,
-      user: {
-        id: "dev-user-id",
-        name: "Development User",
-        email: "dev@example.com",
-        role: "admin"
+      if (!user) {
+        user = new User({
+          name: "Development User",
+          email,
+          role: "admin",
+        });
+        await user.save();
       }
-    });
-  } catch (err) {
-    console.error("Dev login error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+
+      const payload = {
+        user: {
+          id: user.id,
+          role: user.role,
+        },
+      };
+
+      const token = jwt.sign(
+        payload,
+        process.env.JWT_SECRET || "dev-secret-key-for-jwt",
+        { expiresIn: "1d" }
+      );
+
+      res.json({
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
+    } catch (err) {
+      console.error("Dev login error:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  // Regular user dev login
+  router.post("/dev-user-login", async (req, res) => {
+    try {
+      const email = "devuser@example.com";
+      let user = await User.findOne({ email });
+
+      if (!user) {
+        user = new User({
+          name: "Development Regular User",
+          email,
+          role: "user",
+        });
+        await user.save();
+      }
+
+      const payload = {
+        user: {
+          id: user.id,
+          role: user.role,
+        },
+      };
+
+      const token = jwt.sign(
+        payload,
+        process.env.JWT_SECRET || "dev-secret-key-for-jwt",
+        { expiresIn: "1d" }
+      );
+
+      res.json({
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
+    } catch (err) {
+      console.error("Dev user login error:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+}
 
 // Original OAuth flow routes
 router.get(
