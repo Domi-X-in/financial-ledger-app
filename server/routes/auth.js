@@ -183,8 +183,10 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // For development purposes, allow simple password login
-    // In production, you should verify the password with bcrypt.compare
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
     // Generate token
     const payload = {
@@ -304,6 +306,7 @@ if (process.env.NODE_ENV !== "production") {
       res.status(500).json({ message: "Server error" });
     }
   });
+
 }
 
 // Original OAuth flow routes
