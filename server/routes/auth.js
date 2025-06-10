@@ -219,14 +219,27 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Add development login endpoint
-if (process.env.NODE_ENV === "development") {
-  router.post("/dev-login", (req, res) => {
+// Add development login endpoints (disabled in production)
+if (process.env.NODE_ENV !== "production") {
+  // Admin dev login
+  router.post("/dev-login", async (req, res) => {
     try {
+      const email = "dev@example.com";
+      let user = await User.findOne({ email });
+
+      if (!user) {
+        user = new User({
+          name: "Development User",
+          email,
+          role: "admin",
+        });
+        await user.save();
+      }
+
       const payload = {
         user: {
-          id: "dev-user-id",
-          role: "admin",
+          id: user.id,
+          role: user.role,
         },
       };
 
@@ -239,10 +252,10 @@ if (process.env.NODE_ENV === "development") {
       res.json({
         token,
         user: {
-          id: "dev-user-id",
-          name: "Development User",
-          email: "dev@example.com",
-          role: "admin",
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
         },
       });
     } catch (err) {
@@ -250,6 +263,50 @@ if (process.env.NODE_ENV === "development") {
       res.status(500).json({ message: "Server error" });
     }
   });
+
+  // Regular user dev login
+  router.post("/dev-user-login", async (req, res) => {
+    try {
+      const email = "devuser@example.com";
+      let user = await User.findOne({ email });
+
+      if (!user) {
+        user = new User({
+          name: "Development Regular User",
+          email,
+          role: "user",
+        });
+        await user.save();
+      }
+
+      const payload = {
+        user: {
+          id: user.id,
+          role: user.role,
+        },
+      };
+
+      const token = jwt.sign(
+        payload,
+        process.env.JWT_SECRET || "dev-secret-key-for-jwt",
+        { expiresIn: "1d" }
+      );
+
+      res.json({
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
+    } catch (err) {
+      console.error("Dev user login error:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
 }
 
 // Original OAuth flow routes

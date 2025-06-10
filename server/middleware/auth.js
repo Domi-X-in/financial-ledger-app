@@ -3,8 +3,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 module.exports = (req, res, next) => {
-  // IMPORTANT: We're removing the development mode bypass
-  // to ensure permissions are properly enforced
+  // Authentication middleware
 
   // Get token from header
   const authHeader = req.headers.authorization;
@@ -23,17 +22,7 @@ module.exports = (req, res, next) => {
       process.env.JWT_SECRET || "dev-secret-key-for-jwt"
     );
 
-    // In development mode, if the user ID is 'dev-user-id', bypass database check
-    if (decoded.user.id === 'dev-user-id') {
-      console.log('Development mode: Bypassing database check for dev user');
-      req.user = {
-        _id: 'dev-user-id',
-        name: 'Development User',
-        email: 'dev@example.com',
-        role: 'admin'
-      };
-      return next();
-    }
+
 
     // Find user in database
     User.findById(decoded.user.id)

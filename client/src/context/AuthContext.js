@@ -174,21 +174,20 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Add this to AuthProvider component after the existing devLogin function
-  const devUserLogin = () => {
-    // Create a fake regular user for development
-    const fakeToken = "dev-user-token-for-testing";
-    const fakeUser = {
-      _id: "dev-regular-user-id",
-      name: "Regular User",
-      email: "user@example.com",
-      role: "user", // Regular user role
-    };
+  // Development login for a regular user
+  const devUserLogin = async () => {
+    try {
+      const response = await api.post("/api/auth/dev-user-login");
+      const { token, user } = response.data;
 
-    localStorage.setItem("token", fakeToken);
-    localStorage.setItem("user", JSON.stringify(fakeUser));
-    setToken(fakeToken);
-    setUser(fakeUser);
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      setToken(token);
+      setUser(user);
+    } catch (err) {
+      console.error("Development user login error:", err);
+      throw err;
+    }
   };
 
   const value = {
@@ -199,8 +198,8 @@ export const AuthProvider = ({ children }) => {
     googleLogin,
     register,
     logout,
-    devLogin,
-    devUserLogin,
+    devLogin: process.env.NODE_ENV !== "production" ? devLogin : undefined,
+    devUserLogin: process.env.NODE_ENV !== "production" ? devUserLogin : undefined,
     isAuthenticated: !!user,
     isAdmin: user && user.role === "admin",
   };
