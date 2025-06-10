@@ -218,35 +218,37 @@ router.post("/login", async (req, res) => {
 });
 
 // Add development login endpoint
-router.post("/dev-login", (req, res) => {
-  try {
-    const payload = {
-      user: {
-        id: "dev-user-id",
-        role: "admin"
-      }
-    };
+if (process.env.NODE_ENV === "development") {
+  router.post("/dev-login", (req, res) => {
+    try {
+      const payload = {
+        user: {
+          id: "dev-user-id",
+          role: "admin",
+        },
+      };
 
-    const token = jwt.sign(
-      payload,
-      process.env.JWT_SECRET || "dev-secret-key-for-jwt",
-      { expiresIn: "1d" }
-    );
+      const token = jwt.sign(
+        payload,
+        process.env.JWT_SECRET || "dev-secret-key-for-jwt",
+        { expiresIn: "1d" }
+      );
 
-    res.json({
-      token,
-      user: {
-        id: "dev-user-id",
-        name: "Development User",
-        email: "dev@example.com",
-        role: "admin"
-      }
-    });
-  } catch (err) {
-    console.error("Dev login error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+      res.json({
+        token,
+        user: {
+          id: "dev-user-id",
+          name: "Development User",
+          email: "dev@example.com",
+          role: "admin",
+        },
+      });
+    } catch (err) {
+      console.error("Dev login error:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+}
 
 // Original OAuth flow routes
 router.get(
