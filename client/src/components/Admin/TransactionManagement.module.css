@@ -428,6 +428,17 @@
     min-width: 0;
     max-width: none;
   }
+  .responsive-table th:first-child,
+  .responsive-table td:first-child,
+  .responsive-table th:nth-child(2),
+  .responsive-table td:nth-child(2),
+  .responsive-table th:nth-child(3),
+  .responsive-table td:nth-child(3),
+  .responsive-table th:nth-child(4),
+  .responsive-table td:nth-child(4) {
+    width: auto;
+    min-width: 0;
+  }
 }
 
 /* Card layout for ultra-small screens */
