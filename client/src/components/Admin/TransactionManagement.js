@@ -137,13 +137,6 @@ const TransactionManagement = () => {
     });
   };
 
-  const handleSelectAll = () => {
-    if (selectedTransactions.size === transactions.length) {
-      setSelectedTransactions(new Set());
-    } else {
-      setSelectedTransactions(new Set(transactions.map(t => t._id)));
-    }
-  };
 
   const handleBulkDelete = async () => {
     if (window.confirm(`Are you sure you want to delete ${selectedTransactions.size} transaction(s)?`)) {
@@ -197,7 +190,8 @@ const TransactionManagement = () => {
     }
   };
 
-  const isCheckboxDisabled = (transactionId) => {
+  // Disable selection of other transactions when one is already selected
+  const isSelectionLocked = (transactionId) => {
     return selectedTransactions.size === 1 && !selectedTransactions.has(transactionId);
   };
 
@@ -399,14 +393,6 @@ const TransactionManagement = () => {
               <table className={`${styles['responsive-table']} table`}>
                 <thead>
                   <tr>
-                    <th>
-                      <input
-                        type="checkbox"
-                        checked={selectedTransactions.size === transactions.length}
-                        onChange={handleSelectAll}
-                        className={styles['select-checkbox']}
-                      />
-                    </th>
                     <th>Date</th>
                     <th>Description</th>
                     <th>Amount</th>
@@ -416,25 +402,21 @@ const TransactionManagement = () => {
                 <tbody>
                   {transactions.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="text-center">
+                      <td colSpan="4" className="text-center">
                         No transactions found.
                       </td>
                     </tr>
                   ) : (
                     transactions.map((transaction) => (
-                      <tr 
+                      <tr
                         key={transaction._id}
-                        className={selectedTransactions.has(transaction._id) ? styles['selected-row'] : ''}
+                        className={selectedTransactions.has(transaction._id) ? `${styles['selected-row']} ${styles['clickable-row']}` : styles['clickable-row']}
+                        onClick={() => {
+                          if (!isSelectionLocked(transaction._id)) {
+                            handleSelectTransaction(transaction._id);
+                          }
+                        }}
                       >
-                        <td>
-                          <input
-                            type="checkbox"
-                            checked={selectedTransactions.has(transaction._id)}
-                            onChange={() => handleSelectTransaction(transaction._id)}
-                            className={styles['select-checkbox']}
-                            disabled={isCheckboxDisabled(transaction._id)}
-                          />
-                        </td>
                         <td>{formatDate(transaction.date)}</td>
                         <td><span className={styles.ellipsis}>{transaction.description}</span></td>
                         <td>
