@@ -417,9 +417,9 @@ const TransactionManagement = () => {
                           }
                         }}
                       >
-                        <td>{formatDate(transaction.date)}</td>
-                        <td><span className={styles.ellipsis}>{transaction.description}</span></td>
-                        <td>
+                        <td data-label="Date">{formatDate(transaction.date)}</td>
+                        <td data-label="Description"><span className={styles.ellipsis}>{transaction.description}</span></td>
+                        <td data-label="Amount">
                           <span
                             className={
                               transaction.amount >= 0
@@ -435,7 +435,7 @@ const TransactionManagement = () => {
                             )}
                           </span>
                         </td>
-                        <td>
+                        <td data-label="Balance">
                           <span
                             className={
                               transaction.balance >= 0
