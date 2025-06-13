@@ -263,7 +263,7 @@ export const updateLedger = async (id, ledgerData) => {
 export const deleteLedger = async (id) => {
   try {
     setupAxiosDefaults(); // Ensure token is set
-    const res = await axios.delete(`/api/ledgers/${id}`, {
+    const res = await api.delete(`/api/ledgers/${id}`, {
       headers: getAuthHeader(),
     });
     return res.data;
@@ -277,7 +277,7 @@ export const deleteLedger = async (id) => {
 export const createTransaction = async (transactionData) => {
   try {
     setupAxiosDefaults(); // Ensure token is set
-    const res = await axios.post("/api/transactions", transactionData, {
+    const res = await api.post("/api/transactions", transactionData, {
       headers: getAuthHeader(),
     });
     return res.data;
@@ -290,7 +290,7 @@ export const createTransaction = async (transactionData) => {
 export const updateTransaction = async (id, transactionData) => {
   try {
     setupAxiosDefaults(); // Ensure token is set
-    const res = await axios.put(`/api/transactions/${id}`, transactionData, {
+    const res = await api.put(`/api/transactions/${id}`, transactionData, {
       headers: getAuthHeader(),
     });
     return res.data;
@@ -303,7 +303,7 @@ export const updateTransaction = async (id, transactionData) => {
 export const deleteTransaction = async (id) => {
   try {
     setupAxiosDefaults(); // Ensure token is set
-    const res = await axios.delete(`/api/transactions/${id}`, {
+    const res = await api.delete(`/api/transactions/${id}`, {
       headers: getAuthHeader(),
     });
     return res.data;
